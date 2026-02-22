@@ -3,7 +3,7 @@ using Printf
 using Random
 rng = MersenneTwister()
 
-function larfg!(x)
+function larfg_v1!(x)
    """Computes the Householder transformation for input vector x"""
 
 #  (1) I am not sure documentation works
@@ -38,38 +38,36 @@ function larfg!(x)
 
 end
 
-function mylarfg!(x1,x2,τ)
-   """Computes the Householder transformation for input vector x"""
+"""Computes the Householder transformation for input vector x"""
+function larfg!(α,x,τ)
 
 #  (1) I am not sure documentation works
-#
-#  (*) maybe change x1 by alpha and x2 by x
 #
 #  (2) we might want to break this routine so that this is not a vector but first
 #  component and then the rest
 
-   σ = dot(x2[1:end],x2[1:end])
+   σ = dot(x[:],x[:])
 
    if σ == 0
        τ[1] = 0
        return ;
    end
 
-   β = sqrt(x1[1]^2 + σ)
+   β = sqrt(α[1]^2 + σ)
 
-   if x1[1] > 0
-       x1[1] = x1[1] + β
+   if α[1] > 0
+       α[1] = α[1] + β
        r = -β
    else
-       x1[1] = x1[1] - β
+       α[1] = α[1] - β
        r = +β
    end
 
-   x2[1:end] = x2[1:end] / x1[1]
+   x[:] = x[:] / α[1]
 
-   τ[1] = 2.0 / (1.0 + σ / x1[1]^2)
+   τ[1] = 2.0 / (1.0 + σ / α[1]^2)
 
-   x1[1] = r
+   α[1] = r
 
    return ;
 
@@ -93,8 +91,8 @@ function geqr2!( A, τ, w )
        w_  = view( w, 1:1, k+1:n );
        τ_1 = view( τ, k:k );
 
-#      τ[k] = larfg!(A_1)
-       mylarfg!(A11, A21, τ_1)
+#      τ[k] = larfg!(A1_)
+       larfg!(A11, A21, τ_1)
 
 #      this is same as larf
        w_ = A12
