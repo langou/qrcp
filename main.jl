@@ -95,10 +95,11 @@ function geqr2!( A, τ, w )
        larfg!(A11, A21, τ_1)
 
 #      this is same as larf
-       w_ = A12
-       w_ += A21'*A22
-       A12 .-=  τ_1 * w_
-       A22 .-=  A21 * ( τ_1 * w_ )
+       w_ .= A12
+       w_ .+= A21'*A22
+       w_ .*= τ_1
+       A12 .-=  w_
+       A22 .-=  A21 * w_
 
    end
 
@@ -221,9 +222,9 @@ function org2r!( A, τ, w )
 end
 
 
-# m = 10; n =  4; A = randn(rng,Float64,m,n)
+  m = 10; n =  4; A = randn(rng,Float64,m,n)
 # m =  5; n =  5; A = randn(rng,Float64,m,n)
-  m =  6; n = 10; A = randn(rng,Float64,m,n)
+# m =  6; n = 10; A = randn(rng,Float64,m,n)
 
 if (m >= n)
 
